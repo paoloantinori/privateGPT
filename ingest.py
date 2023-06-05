@@ -18,6 +18,8 @@ from langchain.document_loaders import (
     UnstructuredODTLoader,
     UnstructuredPowerPointLoader,
     UnstructuredWordDocumentLoader,
+    CSVLoader,
+    JSONLoader,
 )
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -26,6 +28,9 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
 from constants import CHROMA_SETTINGS
 
+# this is required to fix some funny issue with errors complaining about the inability to unzip
+import nltk
+nltk.download("averaged_perceptron_tagger")
 
 load_dotenv()
 
@@ -61,9 +66,27 @@ class MyElmLoader(UnstructuredEmailLoader):
         return doc
 
 
+# Define the metadata extraction function.
+def metadata_func(record: dict, metadata: dict) -> dict:
+
+    metadata["idf"] = record.get("idf")
+    metadata["title"] = record.get("title")
+    metadata["problem"] = record.get("problem")
+    metadata["details"] = record.get("details")
+    metadata["novelty"] = record.get("novelty")
+    metadata["prior_art"] = record.get("prior_art")
+    metadata["prior_art_advantages"] = record.get("prior_art_advantages")
+    metadata["primary_contact"] = record.get("primary_contact")
+    metadata["coauthors"] = record.get("coauthors")
+    metadata["final_decision"] = record.get("final_decision")
+
+    return metadata
+
 # Map file extensions to document loaders and their arguments
 LOADER_MAPPING = {
     ".csv": (CSVLoader, {}),
+    # Add more mappings for other file extensions and loaders as needed
+     ".json": (JSONLoader, {"jq_schema":'.', "content_key":"details", "metadata_func":metadata_func}),
     # ".docx": (Docx2txtLoader, {}),
     ".doc": (UnstructuredWordDocumentLoader, {}),
     ".docx": (UnstructuredWordDocumentLoader, {}),

@@ -1,0 +1,7 @@
+virtualenv gpt
+source gpt/bin/activate
+
+sudo dnf groupinstall 'Development Tools'
+sudo dnf install g++ clang python3-devel
+
+pip3 install -r requirements.txt
