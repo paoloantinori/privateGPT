@@ -170,3 +170,5 @@ cython_debug/
 #.idea/
 source_documents
 db_*
+*_db
+tmp_source_documents

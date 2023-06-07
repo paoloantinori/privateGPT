@@ -31,7 +31,7 @@ def main():
     # Prepare the LLM
     match model_type:
         case "LlamaCpp":
-            llm = LlamaCpp(model_path=model_path, n_ctx=model_n_ctx, callbacks=callbacks, verbose=False)
+            llm = LlamaCpp(model_path=model_path, n_ctx=model_n_ctx, callbacks=callbacks, verbose=False, temperature=0.7, max_tokens=200, repeat_penalty=1.18, top_p=0.1, n_batch=1024,use_mlock=1,n_threads=6)
         case "GPT4All":
             llm = GPT4All(model=model_path, n_ctx=model_n_ctx, backend='gptj', callbacks=callbacks, verbose=False)
         case _default:
@@ -49,14 +49,14 @@ def main():
         answer, docs = res['result'], [] if args.hide_source else res['source_documents']
 
         # Print the result
-        print("\n\n> Question:")
+        print("\n\n\033[32m\033[2m> Question:\033[0m")
         print(query)
-        print("\n> Answer:")
+        print("\n\033[32m\033[2m>  Answer:\033[0m")
         print(answer)
 
         # Print the relevant sources used for the answer
         for document in docs:
-            print("\n> " + document.metadata["source"] + ":")
+            print("\n\033[31m > " + document.metadata["source"] + ": \033[0m")
             print(document.page_content)
 
 def parse_arguments():
